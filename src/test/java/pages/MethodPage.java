@@ -50,7 +50,13 @@ public class MethodPage {
     public static void begeneTikla(){
         DetailPage detailPage = new DetailPage();
         waitFor(5);
-        detailPage.begenButonu.click();
+        if (detailPage.begenButonu.isSelected()){
+            detailPage.begenButonu.click();
+            waitFor(3);
+            detailPage.begenButonu.click();
+        }else{
+            detailPage.begenButonu.click();
+        }
     }
 
     public static void yeniAcilanSayfayaGec(){

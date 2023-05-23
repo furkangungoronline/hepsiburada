@@ -10,14 +10,15 @@ import pages.*;
 import utilities.ConfigReader;
 import utilities.Driver;
 import utilities.TestBaseRapor;
-
 import java.util.List;
 import java.util.Set;
+
 
 import static tests.ReusableMethods.*;
 
 public class US01 extends TestBaseRapor {
     SoftAssert softAssert;
+    List<String> begenilenUrunIsimleri;
 
     @Test
     public void US01_TC01() {
@@ -81,11 +82,14 @@ public class US01 extends TestBaseRapor {
         // BİR SAYFA OLMADIĞI İÇİN İLK SAYFANIN DEVAMI OLDUĞU İÇİN BU KODLARI ÇALIŞTIRMAYIP BİR SONRAKİ STEP'E GEÇTİM.
 
         //	üstten 5. ürünü tıklayacak
-        List<WebElement> urunlerListesi = Driver.getDriver().findElements(By.xpath("/ul[@id='1']/li/div//a"));
-        waitForClickablility(urunlerListesi.get(4),20);
-        String begenilenUrun = urunlerListesi.get(4).getAttribute("href");
-        urunlerListesi.get(4).click();
-        extentTest.info("üstten 5. ürüne tıklanıldı");
+        int i =5;
+        WebElement element=Driver.getDriver().findElement(By.xpath("(//ul[@id='1']/li/div)["+i+"]"));
+        waitForClickablility(element,10);
+        waitFor(3);
+        String tiklananUrunIsmi = Driver.getDriver().findElement(By.xpath("(//ul[@id='1']/li/div/a)["+i+"]")).getAttribute("title");
+        actions.scrollToElement(element).click(element).perform();
+        extentTest.info("üstten "+i+". ürüne tıklanıldı");
+
 
         //	ÜRÜN FOTOGRAFINA TIKLANILDIĞINDA YENİ SAYFA AÇILDIĞI İÇİN DİĞER SAYFAYA GEÇMEMİZ GEREKİYOR.
         //	BUNUN İÇİN WİNDOW HANDLE DEĞERİNİ ALIP İKİNCİ SAYFAYA GEÇTİM.
@@ -104,20 +108,19 @@ public class US01 extends TestBaseRapor {
         extentTest.info("Ekranın en üstündeki hesabım alanında 'Beğendiklerim' tıklandı");
 
         //	açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğunu onaylayacak
-        //	Beğendiklerime alınmış ürün bulunup seçilecek ve sepete eklenecek
-        List<WebElement> begenilenUrunListesi = Driver.getDriver().findElements(By.xpath("//div[@class='product-list']//a"));
-        System.out.println(begenilenUrunListesi.size());
-        for (int i = 0; i < begenilenUrunListesi.size();i++)
-        {
-            if (begenilenUrunListesi.get(i).getAttribute("href").equals(begenilenUrun))
-            {
-                extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");
-                begenilenUrunListesi.get(i).click();
-                waitForClickablility(detailPage.sepeteEkleButonu,10);
-                detailPage.sepeteEkleButonu.click();
-                extentTest.info("Beğendiklerime alınmış ürün bulunup seçildi ve sepete eklendi");
-            }
+        List<WebElement> begenilenUrunListesi = Driver.getDriver().findElements(By.xpath("//div[@data-test-id='product-card-container']//a"));
+        for (int k=1; k<=begenilenUrunListesi.size(); k++){
+            begenilenUrunIsimleri.add((Driver.getDriver().findElement(By.xpath("(//div[@data-test-id='product-card-container']//a)["+k+"]")).getAttribute("title")));
         }
+        Assert.assertTrue(begenilenUrunIsimleri.contains(tiklananUrunIsmi));
+        extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");
+
+
+        //	Beğendiklerime alınmış ürün bulunup seçilecek ve sepete eklenecek
+        WebElement begenilenUrunSepeteEkleButonu=Driver.getDriver().findElement(By.xpath("//a[@title='"+tiklananUrunIsmi+"']//div[text()='Sepete ekle']"));
+        actions.click(begenilenUrunSepeteEkleButonu).perform();
+        extentTest.info("Beğendiklerime alınmış ürün bulunup sepete eklendi");
+
 
         //	‘ürün sepete eklendi' pop up kontrolü yapacak
         MethodPage.popupKontrolEt("Ürün sepete eklendi");
@@ -133,33 +136,14 @@ public class US01 extends TestBaseRapor {
         // ÜRÜNÜN ÜZERİNE GELİP ÇÖP KOVASI İŞARETİ İLE ÜRÜN KALDIRILDI.
 
         //	Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basılacak, sepetimden çıkarılacak
-
-        List<WebElement> sepettekilerListesi = Driver.getDriver()
-                .findElements(By.xpath("//li[contains(@class,'basket_items')]"));
-
-        //List<WebElement> sepettenKaldirListesi = Driver.getDriver()
-          //      .findElements(By.xpath("//a[contains(@class,'delete_button')]"));
-
-        boolean flag = true;
-
-        for (int i = 0; i < sepettekilerListesi.size(); i++) {
-            if (sepettekilerListesi.get(i).getAttribute("href").contains(begenilenUrun)){
-                sepettekilerListesi.get(i+1).click();
-                extentTest.info("Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basıldı, sepetimden çıkarıldı");
-            }
-        }
+        WebElement sepettenSilinecekUrun=Driver.getDriver().findElement(By.xpath("//a[text()='"+tiklananUrunIsmi+"']//..//..//..//a[@aria-label='Sepetten Çıkar']"));
+        actions.moveToElement(sepettenSilinecekUrun);
+        actions.click(sepettenSilinecekUrun);
+        extentTest.info("Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basıldı, sepetimden çıkarıldı");
 
         // Bu ürünün artık sepette olmadığını onaylayacak
-        for (int i = 0; i < sepettekilerListesi.size(); i++) {
-            if (sepettekilerListesi.get(i).getAttribute("href").contains(begenilenUrun)){
-                flag=false;
-            }
-        }
-        if (flag=true){
-            extentTest.pass("Bu ürünün artık sepette olmadığı onaylandı");
-        }
-
+        Assert.assertFalse(sepettenSilinecekUrun.isDisplayed());
+        extentTest.pass("Bu ürünün artık sepette olmadığını onaylandı");
         softAssert.assertAll();
-
     }
     }
