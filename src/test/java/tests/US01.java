@@ -10,8 +10,14 @@ import pages.*;
 import utilities.ConfigReader;
 import utilities.Driver;
 import utilities.TestBaseRapor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 import static tests.ReusableMethods.*;
@@ -21,7 +27,8 @@ public class US01 extends TestBaseRapor {
     List<String> begenilenUrunIsimleri;
 
     @Test
-    public void US01_TC01() {
+    public void US01() throws IOException {
+
 
         HomePage homePage = new HomePage();
         BasePage basePage = new BasePage();
@@ -30,7 +37,7 @@ public class US01 extends TestBaseRapor {
         softAssert = new SoftAssert();
         Actions actions = new Actions(Driver.getDriver());
 
-        extentTest=extentReports.createTest("US01_TC01", "Test Caseler sirasiyla otomasyon ile yapılacak.");
+        extentTest = extentReports.createTest("US01_TC01", "Test Caseler sirasiyla otomasyon ile yapılacak.");
 
         //<http://www.hepsiburada.com/> sitesini açılacak
         MethodPage.anasayfaAc();
@@ -60,20 +67,20 @@ public class US01 extends TestBaseRapor {
         basePage.telefonButonu.click();
         //waitForVisibility(basePage.cepTelefonuButonu,10);
         basePage.cepTelefonuButonu.click();
-
         extentTest.info("sol menüden 'Telefon' sonrasında 'Cep Telefonu' tıklanıldı");
+
         //gelen sayfada samsung için sonuç bulunduğunu onaylayacak
-        String arananKelime="samsung";
-        String actualAramaSonucStr= basePage.samsungSonuc.getText();
+        String arananKelime = "samsung";
+        String actualAramaSonucStr = basePage.samsungSonuc.getText();
         Assert.assertTrue(actualAramaSonucStr.contains(arananKelime));
         extentTest.info("gelen sayfada samsung için sonuç bulunduğu onaylandı");
 
-
         //arama sonuçlarından 2. sayfaya tıklanacak
         String secondPageUrl = "sayfa=2";
-        String url= Driver.getDriver().getCurrentUrl();
-        if (!url.contains(secondPageUrl)){
-            actions.sendKeys(Keys.PAGE_DOWN).build().perform();}
+        String url = Driver.getDriver().getCurrentUrl();
+        if (!url.contains(secondPageUrl)) {
+            actions.sendKeys(Keys.PAGE_DOWN).build().perform();
+        }
         extentTest.info("açılan sayfada 2. sayfanın şu an gösterimde olduğunu onaylandı");
 
         // TASK'TE HER NE KADAR 2. SAYFAYA TIKLANILACAK STEP'İ BULUNSA DA HEPSİBURADA WEB UYGULAMASININ
@@ -82,14 +89,13 @@ public class US01 extends TestBaseRapor {
         // BİR SAYFA OLMADIĞI İÇİN İLK SAYFANIN DEVAMI OLDUĞU İÇİN BU KODLARI ÇALIŞTIRMAYIP BİR SONRAKİ STEP'E GEÇTİM.
 
         //	üstten 5. ürünü tıklayacak
-        int i =5;
-        WebElement element=Driver.getDriver().findElement(By.xpath("(//ul[@id='1']/li/div)["+i+"]"));
-        waitForClickablility(element,10);
+        int i = 5;
+        WebElement element = Driver.getDriver().findElement(By.xpath("(//ul[@id='1']/li/div)[" + i + "]"));
+        waitForClickablility(element, 10);
         waitFor(3);
-        String tiklananUrunIsmi = Driver.getDriver().findElement(By.xpath("(//ul[@id='1']/li/div/a)["+i+"]")).getAttribute("title");
+        String tiklananUrunIsmi = Driver.getDriver().findElement(By.xpath("(//ul[@id='1']/li/div/a)[" + i + "]")).getAttribute("title");
         actions.scrollToElement(element).click(element).perform();
-        extentTest.info("üstten "+i+". ürüne tıklanıldı");
-
+        extentTest.info("üstten " + i + ". ürüne tıklanıldı");
 
         //	ÜRÜN FOTOGRAFINA TIKLANILDIĞINDA YENİ SAYFA AÇILDIĞI İÇİN DİĞER SAYFAYA GEÇMEMİZ GEREKİYOR.
         //	BUNUN İÇİN WİNDOW HANDLE DEĞERİNİ ALIP İKİNCİ SAYFAYA GEÇTİM.
@@ -109,18 +115,16 @@ public class US01 extends TestBaseRapor {
 
         //	açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğunu onaylayacak
         List<WebElement> begenilenUrunListesi = Driver.getDriver().findElements(By.xpath("//div[@data-test-id='product-card-container']//a"));
-        for (int k=1; k<=begenilenUrunListesi.size(); k++){
-            begenilenUrunIsimleri.add((Driver.getDriver().findElement(By.xpath("(//div[@data-test-id='product-card-container']//a)["+k+"]")).getAttribute("title")));
+        for (int k = 1; k <= begenilenUrunListesi.size(); k++) {
+            begenilenUrunIsimleri.add((Driver.getDriver().findElement(By.xpath("(//div[@data-test-id='product-card-container']//a)[" + k + "]")).getAttribute("title")));
         }
         Assert.assertTrue(begenilenUrunIsimleri.contains(tiklananUrunIsmi));
         extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");
 
-
         //	Beğendiklerime alınmış ürün bulunup seçilecek ve sepete eklenecek
-        WebElement begenilenUrunSepeteEkleButonu=Driver.getDriver().findElement(By.xpath("//a[@title='"+tiklananUrunIsmi+"']//div[text()='Sepete ekle']"));
+        WebElement begenilenUrunSepeteEkleButonu = Driver.getDriver().findElement(By.xpath("//a[@title='" + tiklananUrunIsmi + "']//div[text()='Sepete ekle']"));
         actions.click(begenilenUrunSepeteEkleButonu).perform();
         extentTest.info("Beğendiklerime alınmış ürün bulunup sepete eklendi");
-
 
         //	‘ürün sepete eklendi' pop up kontrolü yapacak
         MethodPage.popupKontrolEt("Ürün sepete eklendi");
@@ -136,7 +140,7 @@ public class US01 extends TestBaseRapor {
         // ÜRÜNÜN ÜZERİNE GELİP ÇÖP KOVASI İŞARETİ İLE ÜRÜN KALDIRILDI.
 
         //	Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basılacak, sepetimden çıkarılacak
-        WebElement sepettenSilinecekUrun=Driver.getDriver().findElement(By.xpath("//a[text()='"+tiklananUrunIsmi+"']//..//..//..//a[@aria-label='Sepetten Çıkar']"));
+        WebElement sepettenSilinecekUrun = Driver.getDriver().findElement(By.xpath("//a[text()='" + tiklananUrunIsmi + "']//..//..//..//a[@aria-label='Sepetten Çıkar']"));
         actions.moveToElement(sepettenSilinecekUrun);
         actions.click(sepettenSilinecekUrun);
         extentTest.info("Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basıldı, sepetimden çıkarıldı");
@@ -145,5 +149,19 @@ public class US01 extends TestBaseRapor {
         Assert.assertFalse(sepettenSilinecekUrun.isDisplayed());
         extentTest.pass("Bu ürünün artık sepette olmadığını onaylandı");
         softAssert.assertAll();
+
+        String dosyaYolu = "src/resourses/rapor.xlsx";
+        FileInputStream fis = new FileInputStream(dosyaYolu);
+        Workbook workbook = WorkbookFactory.create(fis);
+        if (!sepettenSilinecekUrun.isDisplayed()) {
+            workbook.getSheet("Sayfa1").getRow(0).createCell(1).setCellValue("Test başarı ile sonuçlandırıldı.");
+        } else {
+            workbook.getSheet("Sayfa1").getRow(0).createCell(1).setCellValue("Test başarısız oldu.");
+        }
+        FileOutputStream fos = new FileOutputStream(dosyaYolu);
+        workbook.write(fos);
+        fis.close();
+        fos.close();
+
     }
-    }
+}
