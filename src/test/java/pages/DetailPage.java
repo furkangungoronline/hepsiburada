@@ -36,13 +36,10 @@ public class DetailPage {
     @FindBy(xpath = "//a[@title='Hepsiburada']")
     public WebElement hepsiburadaIkonu;
 
-    @FindBy(xpath = "//h3[@data-test-id='product-card-name']")
-    public WebElement begenilenUrun;
-
     @FindBy(xpath = "//span[text()='Sepetim']")
     public WebElement sepetimButonu;
 
-    @FindBy(xpath = "//a[@aria-label='Sepetten Çıkar']")
-    public WebElement kaldirmaButonu;
+    @FindBy(xpath = "//button[text()='Onayla']")
+    public WebElement onaylaButonu;
 
 }

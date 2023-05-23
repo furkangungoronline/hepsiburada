@@ -32,13 +32,15 @@ public class US01 extends TestBaseRapor {
         extentTest=extentReports.createTest("US01_TC01", "Test Caseler sirasiyla otomasyon ile yapılacak.");
 
         //<http://www.hepsiburada.com/> sitesini açılacak
-        MethodPage.AnasayfaAc();
+        MethodPage.anasayfaAc();
 
         //anasayfanın açıldığını onaylayacak
         Assert.assertTrue(homePage.girisButonu.isDisplayed());
         extentTest.info("anasayfa açıldı");
 
         waitForPageToLoad(10); // sayfa yüklenene kadar 10 saniye beklenilecek.
+
+        MethodPage.cerezleriKabulEt(); //ekrana gelen çerezleri kabul ettim
 
         //login ekranını açılacak ve bir kullanıcı ile login olacak
         actions.click(homePage.girisButonu)
@@ -47,12 +49,10 @@ public class US01 extends TestBaseRapor {
         extentTest.info("login sayfası açıldı ve bir kullanıcı ile login olundu");
 
         //ONCELIKLE BEGENILEN KUTUSUNU BOSALTIYORUZ.
-        MethodPage.BegendiklerimKutusunuBosalt();
-
-        MethodPage.CerezleriKabulEt(); //ekrana gelen çerezleri kabul ettim
+        //MethodPage.begendiklerimKutusunuBosalt();
 
         //ekranın üstündeki Search alanına 'samsung' yazılacak ve ‘ara' butonuna tıklayacak
-        MethodPage.SamsungUrunArama();
+        MethodPage.urunArama("samsung");
         extentTest.info("ekranın üstündeki Search alanına 'samsung' yazıldı ve ara butonuna tıklanıldı");
 
         //sol menüden 'Telefon' sonrasında 'Cep Telefonu' tıklayacak
@@ -81,47 +81,51 @@ public class US01 extends TestBaseRapor {
         // BİR SAYFA OLMADIĞI İÇİN İLK SAYFANIN DEVAMI OLDUĞU İÇİN BU KODLARI ÇALIŞTIRMAYIP BİR SONRAKİ STEP'E GEÇTİM.
 
         //	üstten 5. ürünü tıklayacak
-        List<WebElement> urunlerListesi = Driver.getDriver().findElements(By.xpath("//ul[@id='1']/li/div"));
+        List<WebElement> urunlerListesi = Driver.getDriver().findElements(By.xpath("/ul[@id='1']/li/div//a"));
         waitForClickablility(urunlerListesi.get(4),20);
+        String begenilenUrun = urunlerListesi.get(4).getAttribute("href");
         urunlerListesi.get(4).click();
         extentTest.info("üstten 5. ürüne tıklanıldı");
 
         //	ÜRÜN FOTOGRAFINA TIKLANILDIĞINDA YENİ SAYFA AÇILDIĞI İÇİN DİĞER SAYFAYA GEÇMEMİZ GEREKİYOR.
         //	BUNUN İÇİN WİNDOW HANDLE DEĞERİNİ ALIP İKİNCİ SAYFAYA GEÇTİM.
-        MethodPage.YeniAcilanSayfayaGec();
+        MethodPage.yeniAcilanSayfayaGec();
 
         //	ürün detayında 'Beğen' butonuna tıklayacak
-        MethodPage.BegeneTikla();
+        MethodPage.begeneTikla();
         extentTest.info("ürün detayında 'Beğen' butonuna tıklanıldı");
 
         //	’ürün listenize eklendi.' pop up kontrolü yapacak
-        MethodPage.PopupKontrolEt("ürün listenize eklendi");
+        MethodPage.popupKontrolEt("Ürün listenize eklendi");
         extentTest.info("’ürün listenize eklendi.' pop up kontrol edildi");
 
         //	Ekranın en üstündeki hesabım alanında 'Beğendiklerim' tıklayacak
-        MethodPage.BegendiklerimeTikla();
+        MethodPage.begendiklerimeTikla();
         extentTest.info("Ekranın en üstündeki hesabım alanında 'Beğendiklerim' tıklandı");
 
         //	açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğunu onaylayacak
-        List<WebElement> begenilenUrunListesi = Driver.getDriver().findElements(By.xpath("//div[@class='product-list']//a"));
-        System.out.println(begenilenUrunListesi);
-        extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");
-
-
         //	Beğendiklerime alınmış ürün bulunup seçilecek ve sepete eklenecek
-        actions.click(detailPage.begenilenUrun)
-                        .click(detailPage.sepeteEkleButonu).perform();
-        extentTest.info("Beğendiklerime alınmış ürün bulunup seçildi ve sepete eklendi");
-
-
+        List<WebElement> begenilenUrunListesi = Driver.getDriver().findElements(By.xpath("//div[@class='product-list']//a"));
+        System.out.println(begenilenUrunListesi.size());
+        for (int i = 0; i < begenilenUrunListesi.size();i++)
+        {
+            if (begenilenUrunListesi.get(i).getAttribute("href").equals(begenilenUrun))
+            {
+                extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");
+                begenilenUrunListesi.get(i).click();
+                waitForClickablility(detailPage.sepeteEkleButonu,10);
+                detailPage.sepeteEkleButonu.click();
+                extentTest.info("Beğendiklerime alınmış ürün bulunup seçildi ve sepete eklendi");
+            }
+        }
 
         //	‘ürün sepete eklendi' pop up kontrolü yapacak
-        MethodPage.PopupKontrolEt("ürün sepete eklendi");
+        MethodPage.popupKontrolEt("Ürün sepete eklendi");
         extentTest.info("‘ürün sepete eklendi' pop up kontrolü yapıldı");
 
 
         //	Sepetim sayfasına gidecek
-        MethodPage.SepetimeTikla();
+        MethodPage.sepetimeTikla();
         extentTest.info("Sepetim sayfasına gidildi");
 
 
@@ -129,21 +133,33 @@ public class US01 extends TestBaseRapor {
         // ÜRÜNÜN ÜZERİNE GELİP ÇÖP KOVASI İŞARETİ İLE ÜRÜN KALDIRILDI.
 
         //	Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basılacak, sepetimden çıkarılacak
-        actions.moveToElement(detailPage.begenilenUrun);
-        actions.click(detailPage.kaldirmaButonu);
-        extentTest.info("Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basıldı, sepetimden çıkarıldı");
 
+        List<WebElement> sepettekilerListesi = Driver.getDriver()
+                .findElements(By.xpath("//li[contains(@class,'basket_items')]"));
 
+        //List<WebElement> sepettenKaldirListesi = Driver.getDriver()
+          //      .findElements(By.xpath("//a[contains(@class,'delete_button')]"));
+
+        boolean flag = true;
+
+        for (int i = 0; i < sepettekilerListesi.size(); i++) {
+            if (sepettekilerListesi.get(i).getAttribute("href").contains(begenilenUrun)){
+                sepettekilerListesi.get(i+1).click();
+                extentTest.info("Sepete eklenen bu ürünün içine girilip 'Kaldır' butonuna basıldı, sepetimden çıkarıldı");
+            }
+        }
 
         // Bu ürünün artık sepette olmadığını onaylayacak
+        for (int i = 0; i < sepettekilerListesi.size(); i++) {
+            if (sepettekilerListesi.get(i).getAttribute("href").contains(begenilenUrun)){
+                flag=false;
+            }
+        }
+        if (flag=true){
+            extentTest.pass("Bu ürünün artık sepette olmadığı onaylandı");
+        }
 
-        // Algortima ; Sepetin tamamen boş olduğu yada eklenen ürünün URL'sinin sepetteki ürünlerin listesinin içinde olup olmadığını
-        // kontrol eden bir for döngüsü oluşturulacak. Eğer for döngüsü bize boş dönerse artık o ürün sepetten kaldırılmış
-        // olacak ve test pass olacak.
-
-
-        extentTest.pass("Bu ürünün artık sepette olmadığını onaylandı");
         softAssert.assertAll();
 
     }
-}
+    }
