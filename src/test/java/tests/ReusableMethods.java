@@ -26,17 +26,9 @@ public class ReusableMethods {
     static JavascriptExecutor jse;
     static Actions actions;
 
-    //   HARD WAIT WITH THREAD.SLEEP
-//   waitFor(5);  => waits for 5 second
-
     public static void login(){
         LoginPage loginPage = new LoginPage();
-        HomePage homePage = new HomePage();
-        Driver.getDriver().get(ConfigReader.getProperty("hepsiburadaUrl"));
-        waitFor(5);
         Actions actions = new Actions(Driver.getDriver());
-        actions.click(homePage.girisButonu)
-                .click(homePage.girisyapButonu).perform();
         loginPage.userName.sendKeys(ConfigReader.getProperty("validVendorEmail"));
         loginPage.girisYapButonu.click();
         loginPage.password.sendKeys(ConfigReader.getProperty("validVendorPassword"));
@@ -44,6 +36,8 @@ public class ReusableMethods {
         waitFor(5);
     }
 
+    //   HARD WAIT WITH THREAD.SLEEP
+    //   waitFor(5);  => waits for 5 second
     public static void waitFor(int sec) {
         try {
             Thread.sleep(sec * 1000);
@@ -91,21 +85,6 @@ public class ReusableMethods {
         return wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
 
-
-    public static String getScreenshot(String name) throws IOException {
-        // naming the screenshot with the current date to avoid duplication
-        String date = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-        // TakesScreenshot is an interface of selenium that takes the screenshot
-        TakesScreenshot ts = (TakesScreenshot) Driver.getDriver();
-        File source = ts.getScreenshotAs(OutputType.FILE);
-        // full path to the screenshot location
-        String target = System.getProperty("user.dir") + "/target/Screenshots/" + name + date + ".png";
-        File finalDestination = new File(target);
-        // save the screenshot to the path given
-        FileUtils.copyFile(source, finalDestination);
-        return target;
-    }
-
     public static void clickWithTimeOut(WebElement element, int timeout) {
         for (int i = 0; i < timeout; i++) {
             try {
@@ -133,22 +112,9 @@ public class ReusableMethods {
         }
     }
 
-    //======Fluent Wait====//
-    public static WebElement fluentWait(final WebElement webElement, int timeout) {
-        //FluentWait<WebDriver> wait = new FluentWait<WebDriver>(Driver.getDriver()).withTimeout(timeinsec, TimeUnit.SECONDS).pollingEvery(timeinsec, TimeUnit.SECONDS);
-        FluentWait<WebDriver> wait = new FluentWait<WebDriver>(Driver.getDriver())
-                .withTimeout(Duration.ofSeconds(3))//Wait 3 second each time
-                .pollingEvery(Duration.ofSeconds(1));//Check for the element every 1 second
-        WebElement element = wait.until(new Function<WebDriver, WebElement>() {
-            public WebElement apply(WebDriver driver) {
-                return webElement;
-            }
-        });
-        return element;
-    }
 
     //======Sadece çalışılan kısmı ekran görüntüsünü alma====//
-    public static String gScreenshot(String name) throws IOException {
+    public static String getScreenshot(String name) throws IOException {
         // naming the screenshot with the current date to avoid duplication
         String date = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
         // TakesScreenshot is an interface of selenium that takes the screenshot

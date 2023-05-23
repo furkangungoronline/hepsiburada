@@ -21,8 +21,20 @@ public class DetailPage {
     @FindBy(xpath = "//a[text()='Beğendiklerim']")
     public WebElement begendiklerimButonu;
 
+    @FindBy(xpath = "//button[text()='Düzenle']")
+    public WebElement duzenleButonu;
+
     @FindBy(xpath = "//span[text()='Sepete Ekle']")
     public WebElement sepeteEkleButonu;
+
+    @FindBy(xpath = "//input[@type='checkbox']")
+    public WebElement tumunuSilButonu;
+
+    @FindBy(xpath = "//div[text()='Seçilenleri sil']")
+    public WebElement secilenleriSilButonu;
+
+    @FindBy(xpath = "//a[@title='Hepsiburada']")
+    public WebElement hepsiburadaIkonu;
 
     @FindBy(xpath = "//h3[@data-test-id='product-card-name']")
     public WebElement begenilenUrun;
