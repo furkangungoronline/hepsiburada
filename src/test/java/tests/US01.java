@@ -65,7 +65,7 @@ public class US01 extends TestBaseRapor {
     @Test
     public void US01_TC03() {
         login();
-        extentTest=extentReports.createTest("US01_TC03", "ekranın üstündeki Search alanına 'samsung' yazılacak, ‘ara' butonuna tıklayacak");
+        extentTest=extentReports.createTest("US01_TC03", "ekranın üstündeki Search alanına 'samsung' yazılacak, ‘ara' butonuna tıklayacak ve devamindaki stepler");
         BasePage basePage = new BasePage();
         DetailPage detailPage = new DetailPage();
         softAssert = new SoftAssert();
