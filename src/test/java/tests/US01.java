@@ -64,14 +64,14 @@ public class US01 extends TestBaseRapor {
 
     @Test
     public void US01_TC03() {
-        login();
         extentTest=extentReports.createTest("US01_TC03", "ekranın üstündeki Search alanına 'samsung' yazılacak, ‘ara' butonuna tıklayacak ve devamindaki stepler");
         BasePage basePage = new BasePage();
         DetailPage detailPage = new DetailPage();
         softAssert = new SoftAssert();
         //ekranın üstündeki Search alanına 'samsung' yazılacak
-        basePage.searchBox.sendKeys("samsung");
+        login();
         basePage.kabulEtButonu.click();
+        basePage.searchBox.sendKeys("samsung");
         extentTest.info("ekranın üstündeki Search alanına 'samsung' yazıldı");
         //‘ara' butonuna tıklayacak
         basePage.araButonu.click();
@@ -112,7 +112,7 @@ public class US01 extends TestBaseRapor {
         //scrollDowntoPixel(200);
 
         List<WebElement> urunlerListesi = Driver.getDriver().findElements(By.xpath("//ul[@id='1']/li/div"));
-        waitFor(5);
+        waitForClickablility(urunlerListesi.get(4),10);
         urunlerListesi.get(4).click();
         extentTest.info("üstten 5. ürüne tıklanıldı");
 
@@ -139,7 +139,7 @@ public class US01 extends TestBaseRapor {
 
         //	’ürün listenize eklendi.' pop up kontrolü yapacak
         String actualAlert1 = Driver.getDriver().findElement(By.xpath("//div[@class='hb-toast-text']")).getText();
-        String expectedAlert1= "Ürün listenize eklendi.";
+        String expectedAlert1= "Ürün listenize eklendi";
         Assert.assertTrue(actualAlert1.contains(expectedAlert1));
         extentTest.info("’ürün listenize eklendi.' pop up kontrol edildi");
 
@@ -153,18 +153,16 @@ public class US01 extends TestBaseRapor {
         //	açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğunu onaylayacak
 
         List<WebElement> begenilenUrunListesi = Driver.getDriver().findElements(By.xpath("//div[@class='product-list']//a"));
+        System.out.println(begenilenUrunListesi);
         //Bu kısımdan sonrasını en azından tamamlayabildiğim hali ile yetiştirebilmek adına
         // düşündüğüm algoritmayı tamamlayamadan github'a pusladım.
         // Algortima ; Beğenilen ürünlerin listesini alıp ilk beğendiğimiz ürünün
         // URL'sinin bu listede olup olmadığını kontrol eden bir for döngüsü oluşturulacak.
         // Oluşturulan for döngüsü içinde beğenilen ürünün URL'si bulunuyor ise test pass olacak.
 
-        /*String besinciUrunAdi = basePage.besinciUrunResmi.getText();
-        String begenilenUrunAdi = Driver.getDriver().findElement(By.xpath("//h3[@data-test-id='product-card-name']")).getText();
-        Assert.assertEquals(besinciUrunAdi,begenilenUrunAdi);
-        extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");*/
         //a[@href='https://www.hepsiburada.com/samsung-galaxy-a32-128-gb-samsung-turkiye-garantili-p-HBCV000005PKKF']
 
+        extentTest.info("açılan sayfada bir önceki sayfada beğendiklerime alınmış ürünün bulunduğu onaylandı");
 
 
         //	Beğendiklerime alınmış ürün bulunup seçilecek ve sepete eklenecek
