@@ -163,5 +163,6 @@ public class US01 extends TestBaseRapor {
         fis.close();
         fos.close();
 
+        Driver.closeDriver();
     }
 }
